@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Socially - My Social App</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f6fa;
+  color: #202333;
+}
+
+button { cursor: pointer; border: none; font: inherit; }
+
+:root {
+  --blue: #6258e8;
+  --light: #eeedff;
+}
+
+.topbar {
+  height: 65px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(calc((100% - 1100px)/2), 18px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 2px 12px #2023330c;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: -1px;
+}
+
+.top-actions { display: flex; gap: 10px; }
+
+.icon-btn {
+  background: #f1f1fa;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.app-layout {
+  max-width: 1100px;
+  margin: 24px auto 90px;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 600px) 230px;
+  gap: 22px;
+  padding: 0 12px;
+}
+
+.side, .card {
+  background: white;
+  border-radius: 16px;
+  padding: 17px;
+  box-shadow: 0 3px 15px #20233308;
+}
+
+.side {
+  height: max-content;
+  position: sticky;
+  top: 85px;
+}
+
+.nav-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 13px;
+  margin: 5px 0;
+  border-radius: 11px;
+  color: #606477;
+  font-weight: 600;
+  background: white;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item.active, .nav-item:hover {
+  color: var(--blue);
+  background: var(--light);
+}
+
+.nav-item span { font-size: 20px; }
+
+.card { margin-bottom: 17px; }
+
+.welcome {
+  background: linear-gradient(120deg, #6258e8, #a06be9);
+  color: white;
+  padding: 22px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+}
+
+.welcome h2 { margin: 0 0 8px; }
+
+.muted { color: #9295a5; font-size: 13px; }
+
+h3 { margin-top: 0; }
+
+input, textarea {
+  width: 100%;
+  border: 1px solid #e7e7ef;
+  border-radius: 10px;
+  padding: 13px;
+  font: inherit;
+  margin: 7px 0;
+  outline-color: var(--blue);
+}
+
+textarea { resize: vertical; min-height: 75px; }
+
+.primary {
+  background: var(--blue);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.full { width: 100%; }
+
+.avatar {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  background: #e8e5ff;
+  color: var(--blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.post-media {
+  width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  background: #f0f0f5;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.post-actions button {
+  background: #f4f3fb;
+  padding: 10px;
+  border-radius: 9px;
+  flex: 1;
+  color: #51546a;
+}
+
+.comment {
+  background: #f5f5fa;
+  padding: 9px;
+  margin-top: 7px;
+  border-radius: 8px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.profile-head { text-align: center; }
+
+.big-avatar {
+  width: 85px;
+  height: 85px;
+  font-size: 28px;
+  margin: 0 auto 12px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  padding: 17px 0;
+}
+
+.stats strong { display: block; font-size: 20px; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.auth {
+  max-width: 400px;
+  margin: 65px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 5px 25px #0001;
+}
+
+.auth h1 { text-align: center; color: var(--blue); }
+
+.switch {
+  color: var(--blue);
+  text-align: center;
+  cursor: pointer;
+  margin-top: 17px;
+}
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-top: 1px solid #eee;
+  justify-content: space-around;
+  padding: 9px 3px calc(9px + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+
+.bottom-nav button {
+  background: white;
+  color: #77798b;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bottom-nav button span { font-size: 21px; }
+.bottom-nav button.active { color: var(--blue); }
+
+.hidden { display: none !important; }
+
+@media(max-width: 850px) {
+  .app-layout {
+    display: block;
+    max-width: 620px;
+    margin-top: 13px;
+  }
+  .desktop-side, .right-side { display: none; }
+  .bottom-nav { display: flex; }
+  .topbar { padding: 0 16px; }
+}
+
+@media(min-width: 851px) {
+  .app-layout { align-items: start; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="logo">Socially.</div>
+  <div class="top-actions">
+    <button class="icon-btn" onclick="go('search')">🔍</button>
+    <button class="icon-btn" onclick="go('notifications')">🔔</button>
+    <button class="icon-btn" onclick="logout()">↪</button>
+  </div>
+</header>
+
+<section id="signupPage" class="auth">
+  <h1>Socially.</h1>
+  <p style="text-align:center">Connect with your world</p>
+  <h3>Create Account</h3>
+  <input id="signupName" placeholder="Your name">
+  <input id="signupEmail" type="email" placeholder="Email">
+  <input id="signupPassword" type="password" placeholder="Password">
+  <button class="primary full" onclick="signup()">Create Account</button>
+  <p class="switch" onclick="showLogin()">Already have an account? Login</p>
+</section>
+
+<section id="loginPage" class="auth hidden">
+  <h1>Socially.</h1>
+  <h3>Welcome Back</h3>
+  <input id="loginName" placeholder="Your name">
+  <input id="loginEmail" type="email" placeholder="Email">
+  <button class="primary full" onclick="login()">Login</button>
+  <p class="switch" onclick="showSignup()">Create new account</p>
+</section>
+
+<div id="app" class="app-layout hidden">
+
+  <aside class="side desktop-side">
+    <h3>Menu</h3>
+    <div id="desktopNav"></div>
+  </aside>
+
+  <main>
+
+    <section id="homePage" class="page active">
+      <div class="welcome">
+        <h2>Hello, <span id="welcomeName"></span> 👋</h2>
+        <p>Share your moments with the world.</p>
+      </div>
+
+      <div class="card">
+        <div class="post-head">
+          <div class="avatar" id="smallAvatar">U</div>
+          <b>What's on your mind?</b>
+        </div>
+        <textarea id="postText" placeholder="Write something..."></textarea>
+        <input id="mediaInput" type="file" accept="image/*,video/*">
+        <p class="muted">Upload a photo or video (maximum 2 MB)</p>
+        <button class="primary full" onclick="createPost()">＋ Share Post</button>
+      </div>
+
+      <div id="feed"></div>
+    </section>
+
+    <section id="searchPage" class="page">
+      <div class="card">
+        <h2>Explore 🔍</h2>
+        <input id="searchInput" placeholder="Search posts or people..."
+          oninput="renderSearch()">
+        <div id="searchResults"></div>
+      </div>
+    </section>
+
+    <section id="uploadPage" class="page">
+      <div class="card">
+        <h2>Create Post ✨</h2>
+        <p>Share a photo or video with your friends.</p>
+        <textarea id="uploadText" placeholder="Write a caption..."></textarea>
+        <input id="uploadInput" type="file" accept="image/*,video/*">
+        <button class="primary full" onclick="publishFromUpload()">
+          Publish Now
+        </button>
+      </div>
+    </section>
+
+    <section id="notificationsPage" class="page">
+      <div class="card">
+        <h2>Notifications 🔔</h2>
+        <p>Welcome to Socially!</p>
+        <p class="muted">Your notifications will appear here.</p>
+      </div>
+    </section>
+
+    <section id="profilePage" class="page">
+      <div class="card profile-head">
+        <div class="avatar big-avatar" id="profileAvatar">U</div>
+        <h2 id="profileName"></h2>
+        <p class="muted" id="profileEmail"></p>
+        <div class="stats">
+          <div><strong id="profilePosts">0</strong>Posts</div>
+          <div><strong id="profileLikes">0</strong>Likes</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Edit Profile</h3>
+        <input id="newName" placeholder="Change your name">
+        <input id="avatarInput" type="file" accept="image/*">
+        <button class="primary full" onclick="updateProfile()">
+          Save Profile
+        </button>
+      </div>
+
+      <h3>My Posts</h3>
+      <div id="myPosts"></div>
+    </section>
+
+  </main>
+
+  <aside class="side right-side">
+    <h3>About Socially</h3>
+    <p class="muted">A place to share photos, videos and moments.</p>
+    <hr>
+    <p>❤️ Share moments</p>
+    <p>📸 Upload photos</p>
+    <p>🎬 Share videos</p>
+  </aside>
+
+</div>
+
+<nav class="bottom-nav" id="bottomNav">
+  <button data-page="home" onclick="go('home')">
+    <span>🏠</span>Home
+  </button>
+  <button data-page="search" onclick="go('search')">
+    <span>🔍</span>Search
+  </button>
+  <button data-page="upload" onclick="go('upload')">
+    <span>➕</span>Create
+  </button>
+  <button data-page="notifications" onclick="go('notifications')">
+    <span>🔔</span>Alerts
+  </button>
+  <button data-page="profile" onclick="go('profile')">
+    <span>👤</span>Profile
+  </button>
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const navItems = [
+  ["home","🏠","Home"],
+  ["search","🔍","Explore"],
+  ["upload","➕","Create Post"],
+  ["notifications","🔔","Notifications"],
+  ["profile","👤","Profile"]
+];
+
+let user = JSON.parse(localStorage.getItem("socialUser") || "null");
+let posts = JSON.parse(localStorage.getItem("socialPosts") || "[]");
+let temporaryVideos = {};
+
+function safe(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+function save() {
+  localStorage.setItem("socialPosts", JSON.stringify(posts));
+  localStorage.setItem("socialUser", JSON.stringify(user));
+}
+
+function showSignup() {
+  $("signupPage").classList.remove("hidden");
+  $("loginPage").classList.add("hidden");
+  $("app").classList.add("hidden");
+  $("bottomNav").classList.add("hidden");
+}
+
+function showLogin() {
+  $("signupPage").classList.add("hidden");
+  $("loginPage").classList.remove("hidden");
+}
+
+function signup() {
+  const name = $("signupName").value.trim();
+  const email = $("signupEmail").value.trim();
+  const password = $("signupPassword").value;
+
+  if (!name || !email || !password) {
+    alert("Fill all fields");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Enter a valid email");
+    return;
+  }
+  if (password.length < 6) {
+    alert("Password needs 6 characters");
+    return;
+  }
+
+  user = {name, email, avatar:""};
+  save();
+  openApp();
+}
+
+function login() {
+  const name = $("loginName").value.trim();
+  const email = $("loginEmail").value.trim();
+
+  if (!name || !email) {
+    alert("Enter name and email");
+    return;
+  }
+
+  user = {name, email, avatar:""};
+  save();
+  openApp();
+}
+
+function logout() {
+  if (!confirm("Do you want to logout?")) return;
+  user = null;
+  localStorage.removeItem("socialUser");
+  showSignup();
+}
+
+function openApp() {
+  if (!user) return showSignup();
+
+  $("signupPage").classList.add("hidden");
+  $("loginPage").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  $("bottomNav").classList.remove("hidden");
+
+  $("welcomeName").textContent = user.name;
+  $("profileName").textContent = user.name;
+  $("profileEmail").textContent = user.email;
+  $("smallAvatar").textContent = user.name[0].toUpperCase();
+
+  updateAvatar();
+  renderFeed();
+  go("home");
+}
+
+function updateAvatar() {
+  const html = user.avatar
+    ? '<img src="' + user.avatar + '" alt="Profile">'
+    : safe(user.name[0].toUpperCase());
+
+  $("profileAvatar").innerHTML = html;
+  $("smallAvatar").innerHTML = html;
+}
+
+function makeNav() {
+  $("desktopNav").innerHTML = navItems.map(item =>
+    `<button class="nav-item" data-page="${item[0]}"
+      onclick="go('${item[0]}')">
+      <span>${item[1]}</span>${item[2]}
+    </button>`
+  ).join("");
+}
+
+function go(page) {
+  document.querySelectorAll(".page").forEach(el =>
+    el.classList.remove("active")
+  );
+
+  $(page + "Page").classList.add("active");
+
+  document.querySelectorAll("[data-page]").forEach(el => {
+    el.classList.toggle("active", el.dataset.page === page);
+  });
+
+  if (page === "profile") renderProfile();
+  if (page === "search") renderSearch();
+}
+
+function readFile(file, callback) {
+  if (!file) return callback("");
+
+  if (!file.type.startsWith("image/") &&
+      !file.type.startsWith("video/")) {
+    alert("Choose an image or video");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Please choose a file smaller than 2 MB");
+    return;
+  }
+
+  if (file.type.startsWith("video/")) {
+    const id = "video-" + Date.now();
+    temporaryVideos[id] = URL.createObjectURL(file);
+    callback("VIDEO:" + id);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => callback(reader.result);
+  reader.onerror = () => alert("Could not read file");
+  reader.readAsDataURL(file);
+}
+
+function publish(text, file) {
+  text = text.trim();
+
+  if (!text && !file) {
+    alert("Write something or select a file");
+    return;
+  }
+
+  readFile(file, media => {
+    const post = {
+      id: Date.now() + Math.random(),
+      user: user.name,
+      email: user.email,
+      text,
+      media,
+      likes: [],
+      comments: []
+    };
+
+    posts.unshift(post);
+
+    try {
+      save();
+      renderFeed();
+      alert("Your post is published!");
+      go("home");
+    } catch (error) {
+      posts.shift();
+      alert("Storage is full. Try a smaller photo or delete old posts.");
+    }
+  });
+}
+
+function createPost() {
+  publish($("postText").value, $("mediaInput").files[0]);
+  $("postText").value = "";
+  $("mediaInput").value = "";
+}
+
+function publishFromUpload() {
+  publish($("uploadText").value, $("uploadInput").files[0]);
+  $("uploadText").value = "";
+  $("uploadInput").value = "";
+}
+
+function mediaHTML(media) {
+  if (!media) return "";
+
+  if (media.startsWith("VIDEO:")) {
+    const src = temporaryVideos[media.slice(6)];
+    return src
+      ? `<video class="post-media" controls playsinline src="${src}"></video>`
+      : '<p class="muted">Video preview is no longer available. Upload again.</p>';
+  }
+
+  return `<img class="post-media" src="${media}" alt="Post">`;
+}
+
+function renderFeed() {
+  const feed = $("feed");
+  feed.innerHTML = "";
+
+  if (!posts.length) {
+    feed.innerHTML = '<div class="card">No posts yet. Share your first moment!</div>';
+    return;
+  }
+
+  posts.forEach(post => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const liked = post.likes.includes(user.email);
+
+    card.innerHTML = `
+      <div class="post-head">
+        <div class="avatar">${safe(post.user[0].toUpperCase())}</div>
+        <div><b>${safe(post.user)}</b>
+        <div class="muted">Socially member</div></div>
+      </div>
+      <p>${safe(post.text)}</p>
+      ${mediaHTML(post.media)}
+      <div class="post-actions">
+        <button class="like">❤️ ${post.likes.length} ${liked ? "Liked" : "Like"}</button>
+        <button class="comment">💬 ${post.comments.length} Comments</button>
+        ${post.email === user.email
+          ? '<button class="delete">🗑️</button>' : ""}
+      </div>
+      <div class="comments"></div>
+    `;
+
+    card.querySelector(".like").onclick = () => like(post.id);
+    card.querySelector(".comment").onclick = () => comment(post.id);
+
+    const del = card.querySelector(".delete");
+    if (del) del.onclick = () => removePost(post.id);
+
+    const comments = card.querySelector(".comments");
+
+    post.comments.forEach(c => {
+      const line = document.createElement("div");
+      line.className = "comment";
+      line.textContent = c.user + ": " + c.text;
+      comments.appendChild(line);
+    });
+
+    feed.appendChild(card);
+  });
+}
+
+function like(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+
+  const index = post.likes.indexOf(user.email);
+
+  if (index >= 0) post.likes.splice(index, 1);
+  else post.likes.push(user.email);
+
+  save();
+  renderFeed();
+}
+
+function comment(id) {
+  const post = posts.find(p => p.id === id);
+  const value = prompt("Write your comment:");
+
+  if (post && value && value.trim()) {
+    post.comments.push({user:user.name, text:value.trim()});
+    save();
+    renderFeed();
+  }
+}
+
+function removePost(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post || post.email !== user.email) return;
+
+  if (confirm("Delete this post?")) {
+    posts = posts.filter(p => p.id !== id);
+    save();
+    renderFeed();
+    renderProfile();
+  }
+}
+
+function renderProfile() {
+  const mine = posts.filter(p => p.email === user.email);
+
+  $("profilePosts").textContent = mine.length;
+  $("profileLikes").textContent =
+    mine.reduce((total, p) => total + p.likes.length, 0);
+
+  $("myPosts").innerHTML = mine.length
+    ? mine.map(p =>
+      `<div class="card"><b>${safe(p.user)}</b>
+      <p>${safe(p.text)}</p>${mediaHTML(p.media)}</div>`
+    ).join("")
+    : '<div class="card">You have not shared anything yet.</div>';
+}
+
+function updateProfile() {
+  const name = $("newName").value.trim();
+  const file = $("avatarInput").files[0];
+
+  function finish(avatar) {
+    if (name) {
+      const oldEmail = user.email;
+      user.name = name;
+      posts.forEach(p => {
+        if (p.email === oldEmail) p.user = name;
+      });
+    }
+
+    if (avatar) user.avatar = avatar;
+
+    try {
+      save();
+      $("welcomeName").textContent = user.name;
+      $("profileName").textContent = user.name;
+      updateAvatar();
+      renderFeed();
+      renderProfile();
+      alert("Profile updated!");
+    } catch (error) {
+      alert("Could not save profile image. Try a smaller image.");
+    }
+  }
+
+  if (file) {
+    if (!file.type.startsWith("image/") ||
+        file.size > 1.5 * 1024 * 1024) {
+      alert("Choose an image smaller than 1.5 MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => finish(reader.result);
+    reader.readAsDataURL(file);
+  } else {
+    finish("");
+  }
+}
+
+function renderSearch() {
+  const query = $("searchInput").value.toLowerCase().trim();
+  const results = posts.filter(p =>
+    p.user.toLowerCase().includes(query) ||
+    p.text.toLowerCase().includes(query)
+  );
+
+  $("searchResults").innerHTML = results.length
+    ? results.map(p =>
+      `<div class="card"><b>${safe(p.user)}</b>
+      <p>${safe(p.text)}</p>${mediaHTML(p.media)}</div>`
+    ).join("")
+    : "<p>No matching posts found.</p>";
+}
+
+makeNav();
+
+if (user) openApp();
+else showSignup();
+
+</script>
+</body>
+</html>
